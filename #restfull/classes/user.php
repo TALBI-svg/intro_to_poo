@@ -2,6 +2,7 @@
 // include_once '../config/db.php';
 
 class User{
+    public $id;
     public $name;
     public $email;
     public $password;
@@ -75,6 +76,53 @@ class User{
             if($statement->rowCount()>0){
                 return $statement;
             }
+        }else{
+            return false;
+        }
+    }
+
+    public function create_project(){
+        $table=$this->table_project;
+        $connection=$this->conn;
+
+        $project_user_id=htmlspecialchars(($this->project_user_id));
+        $project_name=htmlspecialchars(($this->project_name));
+        $project_description=htmlspecialchars(($this->project_description)); 
+        $project_status=htmlspecialchars(($this->project_status));
+
+        $sql="INSERT INTO $table (user_id, name, description, status, create_at) 
+        VALUES (:user_id, :name, :description, :status, now() )";
+        $statement=$connection->prepare($sql);
+        $statement->execute(array(":user_id"=>$project_user_id, ":name"=>$project_name, ":description"=>$project_description, ":status"=>$project_status));
+        if($statement->rowCount()==1){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public function projects(){
+        $table=$this->table_project;
+        $connection=$this->conn;
+
+        $sql="SELECT * FROM $table";
+        $statement=$connection->query($sql);
+        if($statement->rowCount()>0){
+            return $statement;
+        }else{
+            return false;
+        }
+    }
+
+    public function get_users_projects(){
+        $table=$this->table_project;
+        $connection=$this->conn;
+
+        $id=htmlspecialchars(strip_tags($this->id));
+        $sql="SELECT * FROM $table WHERE user_id=$id";
+        $statement=$connection->query($sql);
+        if($statement->rowCount()>0){
+            return $statement;
         }else{
             return false;
         }

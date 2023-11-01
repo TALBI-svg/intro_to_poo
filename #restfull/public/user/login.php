@@ -1,5 +1,6 @@
 <?php
 
+// error_reporting(E_ALL);
 // include JWT to api
 require '../../vendor/autoload.php';
 use \Firebase\JWT\JWT;
@@ -33,34 +34,32 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
                 if(password_verify($user->password, $password)){
 
                     // create jwt token to pass user inside
-                    $issued="localhost";
-                    $issued_at=time();
-                    $not_before=$issued_at+10;
-                    $expiration=$issued_at+60;
-                    $audiance="my_users";
+                    $iss="localhost";
+                    $iat=time();
+                    $nbf=$iat+10;
+                    $exp=$iat+60;
+                    $aud="myusers";
                     $user_data_arr=array(
                         "id"=>$res['id'],
                         "name"=>$res['name'],
                         "email"=>$res['email'],
                     );
-
-                    $secret_key="utf127";
-                    
                     $payload_info=array(
-                        "issued"=>$issued,
-                        "issued_at"=>$issued_at,
-                        "not_before"=>$not_before,
-                        "expiration"=>$expiration,
-                        "audiance"=>$audiance,
-                        "user_data"=>$user_data_arr,
+                        "iss"=>$iss,
+                        "iat"=>$iat,
+                        "nbf"=>$nbf,
+                        "exp"=>$exp,
+                        "aud"=>$aud,
+                        "data"=>$user_data_arr,
                     );
+                    $secret_key="utf127";
                     $jwt=JWT::encode($payload_info, $secret_key, 'HS256');
 
                     http_response_code(200);
                     echo json_encode(array(
                         "status"=>1,
-                        "jwt"=>$jwt,
-                        "message"=>"User logged in..."
+                        "message"=>"User logged in...",
+                        "jwt"=>$jwt
                     ));
                     // new HandleError(200,1,"User logged in...");
 
